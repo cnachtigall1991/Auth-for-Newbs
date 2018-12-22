@@ -14,6 +14,25 @@ const schema = Joi.object().keys({
   password: Joi.string().regex(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})/).required()
 });
 
+function createTokenSendResponse(user, res, next) {
+  const payload = {
+    _id: user._id,
+    username: user.username
+  };
+  
+  jwt.sign(payload, process.env.TOKEN_SECRET, {
+    expiresIn: '1d'
+  }, (err, token) => {
+    if (err) {
+      respondError422(res, next);
+    } else {
+      res.json({
+        token
+      });
+    }
+  });
+}
+
 // any route in here is pre-pended with /auth
 router.get('/', (req, res) => {
   res.json({
@@ -27,25 +46,19 @@ router.post('/signup', (req, res, next) => {
     users.findOne({
       username: req.body.username
     }).then(user => {
-      // if user is undefined, username is not in the db, otherwise, duplicate user detected
       if (user) {
-        // there is already a user in the db with this username...
-        // respond with an error!
         const error = new Error('Username already exists. Please choose another one!');
         res.status(409);
         next(error);
       } else {
-        // hash the password
         bcrypt.hash(req.body.password, 13).then(hashedPassword => {
-          // insert the user with the hashed password
           const newUser = {
             username: req.body.username,
             password: hashedPassword
           };
 
           users.insert(newUser).then(insertedUser => {
-            delete insertedUser.password;
-            res.json(insertedUser);
+            createTokenSendResponse(insertedUser, res, next);
           });
         });
       }
@@ -69,35 +82,16 @@ router.post('/login', (req, res, next) => {
       username: req.body.username
     }).then(user => {
       if (user) {
-        // Found the user in the db...
-        // now we compare the password...
         bcrypt
           .compare(req.body.password, user.password)
           .then((result) => {
             if (result) {
-              // they sent us the right password
-              const payload = {
-                _id: user._id,
-                username: user.username
-              };
-              
-              jwt.sign(payload, process.env.TOKEN_SECRET, {
-                expiresIn: '1d'
-              }, (err, token) => {
-                if (err) {
-                  respondError422(res, next);
-                } else {
-                  res.json({
-                    token
-                  });
-                }
-              });
+              createTokenSendResponse(user, res, next);
             } else {
               respondError422(res, next);
             }
           });
       } else {
-        // Username not found...
         respondError422(res, next);
       }
     });

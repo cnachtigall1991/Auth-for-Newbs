@@ -36,15 +36,15 @@ Add JWT-based authentication to a Node/Express/Mongo app.
       * [x] Display errors
     * [x] Validate password
       * [x] Display errors
-    * [ ] POST request to server
+    * [ ] POST request to server /auth/login
       * [x] Display errors
       * [x] If succesful login
         * [x] Store the token in localStorage
         * [x] Redirect to the "dashboard"
 * [x] If a logged in user visits the signup or login page, redirect them to the dashboard
 * [x] If a non logged in user visits the dashboard, redirect to the login page
+* [x] After sign up, immediately login
 * [ ] Show username on dashboard
-* [ ] After sign up, immediately login
 * [ ] Have one protected route on the backend...
   * [ ] ONLY logged in users can request this route
 
