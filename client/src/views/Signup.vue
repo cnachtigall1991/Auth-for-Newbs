@@ -98,10 +98,10 @@ export default {
         this.signingUp = true;
         fetch(SIGNUP_URL, {
           method: 'POST',
+          body: JSON.stringify(body),
           headers: {
             'content-type': 'application/json',
           },
-          body: JSON.stringify(body),
         }).then((response) => {
           if (response.ok) {
             return response.json();
@@ -125,21 +125,18 @@ export default {
     },
     validUser() {
       if (this.user.password !== this.user.confirmPassword) {
-        this.errorMessage = 'Passwords must match!';
+        this.errorMessage = 'Passwords must match. 🙈';
         return false;
       }
-
       const result = Joi.validate(this.user, schema);
       if (result.error === null) {
         return true;
       }
-
       if (result.error.message.includes('username')) {
-        this.errorMessage = 'Username is invalid.';
+        this.errorMessage = 'Username is invalid. 😭';
       } else {
-        this.errorMessage = 'Password is invalid.';
+        this.errorMessage = 'Password is invalid. 🙈';
       }
-
       return false;
     },
   },

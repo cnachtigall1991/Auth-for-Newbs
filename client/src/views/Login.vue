@@ -2,10 +2,10 @@
   <section>
     <h1>Login</h1>
     <div v-if="loggingIn">
-      <img src="../assets/pacman_loading.svg" alt="loading_svg" />
+      <img src="../assets/pacman_loading.svg" />
     </div>
     <div v-if="errorMessage" class="alert alert-danger" role="alert">
-      {{ errorMessage }}
+      {{errorMessage}}
     </div>
     <form v-if="!loggingIn" @submit.prevent="login()">
       <div class="form-group">
@@ -16,9 +16,9 @@
           class="form-control"
           id="username"
           aria-describedby="usernameHelp"
-          placeholder="Enter a username" required />
+          placeholder="Enter a username" required>
         <small id="usernameHelp" class="form-text text-muted">
-          Enter your username to login.
+         Enter your username to login.
         </small>
       </div>
       <div class="form-group">
@@ -29,9 +29,9 @@
           class="form-control"
           id="password"
           aria-describedby="passwordHelp"
-          placeholder="Enter a password" required />
+          placeholder="Enter a password" required>
         <small id="passwordHelp" class="form-text text-muted">
-          Enter your password to login.
+         Enter your password to login.
         </small>
       </div>
       <button type="submit" class="btn btn-primary">Login</button>
@@ -99,13 +99,11 @@ export default {
       if (result.error === null) {
         return true;
       }
-
       if (result.error.message.includes('username')) {
-        this.errorMessage = 'Username is invalid.';
+        this.errorMessage = 'Username is invalid. 😭';
       } else {
-        this.errorMessage = 'Password is invalid.';
+        this.errorMessage = 'Password is invalid. 🙈';
       }
-
       return false;
     },
   },

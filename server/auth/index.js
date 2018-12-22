@@ -10,16 +10,18 @@ users.createIndex('username', { unique: true });
 const router = express.Router();
 
 const schema = Joi.object().keys({
-  username: Joi.string().regex(/^[a-zA-Z][a-zA-Z0-9-_]{2,30}$/).required(),
-  password: Joi.string().regex(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})/).required()
+  username: Joi.string().regex(/(^[a-zA-Z0-9_]+$)/).min(2).max(30).required(),
+  password: Joi.string().trim().min(10).required()
 });
 
+// const createTokenSendResponse = function(user, res, next) {
+// const createTokenSendResponse = (user, res, next) => {
 function createTokenSendResponse(user, res, next) {
   const payload = {
     _id: user._id,
     username: user.username
   };
-  
+
   jwt.sign(payload, process.env.TOKEN_SECRET, {
     expiresIn: '1d'
   }, (err, token) => {
@@ -36,7 +38,7 @@ function createTokenSendResponse(user, res, next) {
 // any route in here is pre-pended with /auth
 router.get('/', (req, res) => {
   res.json({
-    message: 'Locked'
+    message:  '🔐'
   });
 });
 
@@ -46,12 +48,17 @@ router.post('/signup', (req, res, next) => {
     users.findOne({
       username: req.body.username
     }).then(user => {
+      // if user is undefined, username is not in the db, otherwise, duplicate user detected
       if (user) {
-        const error = new Error('Username already exists. Please choose another one!');
+        // there is already a user in the db with this username...
+        // respond with an error!
+        const error = new Error('That username is not OG. Please choose another one.');
         res.status(409);
         next(error);
       } else {
-        bcrypt.hash(req.body.password, 13).then(hashedPassword => {
+        // hash the password
+        bcrypt.hash(req.body.password.trim(), 12).then(hashedPassword => {
+          // insert the user with the hashed password
           const newUser = {
             username: req.body.username,
             password: hashedPassword
@@ -79,9 +86,9 @@ router.post('/login', (req, res, next) => {
   const result = Joi.validate(req.body, schema);
   if (result.error === null) {
     users.findOne({
-      username: req.body.username
+      username: req.body.username,
     }).then(user => {
-      if (user) {
+      if (user) {        
         bcrypt
           .compare(req.body.password, user.password)
           .then((result) => {
