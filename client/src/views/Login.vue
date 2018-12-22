@@ -80,9 +80,8 @@ export default {
           return response.json().then((error) => {
             throw new Error(error.message);
           });
-        }).then(() => {
-          // it worked! they entered valid info!
-          // they're logged in now!
+        }).then((result) => {
+          localStorage.token = result.token;
           setTimeout(() => {
             this.loggingIn = false;
             this.$router.push('/dashboard');

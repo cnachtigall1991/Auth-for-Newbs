@@ -11,9 +11,15 @@
       </p>
       <p class="lead">
         <router-link 
-          class="btn btn-primary btn-lg"
+          class="btn btn-primary btn-lg mr-2 ml-2"
           :to="{ name: 'signup' }"
-          role="button">Sign Up</router-link>
+          role="button">Sign Up
+        </router-link>
+        <router-link 
+          class="btn btn-primary btn-lg mr-2 ml-2"
+          :to="{ name: 'login' }"
+          role="button">Login
+        </router-link>
       </p>
     </div>
   </div>
