@@ -7,7 +7,7 @@
     <div v-if="errorMessage" class="alert alert-danger" role="alert">
       {{ errorMessage }}
     </div>
-    <form v-if="!signingUp" @submit.prevent="signup">
+    <form v-if="!signingUp" @submit.prevent="signup()">
       <div class="form-group">
         <label for="username">Username</label>
         <input
@@ -98,10 +98,10 @@ export default {
         this.signingUp = true;
         fetch(SIGNUP_URL, {
           method: 'POST',
-          body: JSON.stringify(body),
           headers: {
             'content-type': 'application/json',
           },
+          body: JSON.stringify(body),
         }).then((response) => {
           if (response.ok) {
             return response.json();
