@@ -4,13 +4,13 @@ const bcrypt = require('bcryptjs');
 
 const db = require('../db/connection');
 const users = db.get('users');
-users.createIndex('users', { unique: true });
+users.createIndex('username', { unique: true });
 
 const router = express.Router();
 
 const schema = Joi.object().keys({
   username: Joi.string().regex(/^[a-zA-Z][a-zA-Z0-9-_]{2,30}$/).required(),
-  password: Joi.string().regex(/^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d)(?=.*[!#$%&? "]).*$/).required()
+  password: Joi.string().regex(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,64})/).required()
 });
 
 // any route in here is pre-pended with /auth
@@ -31,6 +31,7 @@ router.post('/signup', (req, res, next) => {
         // there is already a user in the db with this username...
         // respond with an error!
         const error = new Error('Username already exists. Please choose another one!');
+        res.status(409);
         next(error);
       } else {
         // hash the password
@@ -49,6 +50,7 @@ router.post('/signup', (req, res, next) => {
       }
     });
   } else {
+    res.status(422);
     next(result.error);
   }
 });
